@@ -1,1 +1,1 @@
-# coursera-data-science
+# Training repo for the coursera data science track
