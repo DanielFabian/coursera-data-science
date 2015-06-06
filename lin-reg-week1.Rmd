@@ -7,7 +7,7 @@ output: html_document
 
 $Sd(Y) = 2 \sigma$ and $Sd(X) = \sigma$ $Cor(Y, X) = \frac{1}{2}$
 
-$$\beta_1 = Cor(Y, X)\frac{2 \sigma}{\sigma} = 1$
+$$\beta_1 = Cor(Y, X)\frac{2 \sigma}{\sigma} = 1$$
 
 ### Question 10
 
