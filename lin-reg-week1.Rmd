@@ -1,0 +1,21 @@
+---
+title: "Linear regression - Week 1"
+output: html_document
+---
+
+### Question 4
+
+$Sd(Y) = 2 \sigma$ and $Sd(X) = \sigma$ $Cor(Y, X) = \frac{1}{2}$
+
+$$\beta_1 = Cor(Y, X)\frac{2 \sigma}{\sigma} = 1$
+
+### Question 10
+
+$$\beta_1 = Cor(Y, X) \frac{Sd(Y)}{Sd(X)}$$
+
+$$\gamma_1 = Cor(X, Y) \frac{Sd(X)}{Sd(Y)}$$
+
+$$\frac{\beta_1}{\gamma_1} = \frac{Cor(Y, X) \frac{Sd(Y)}{Sd(X)}}{Cor(X, Y) \frac{Sd(X)}{Sd(Y)}}
+= \frac{\frac{Sd(Y)}{Sd(X)}}{\frac{Sd(X)}{Sd(Y)}}
+= \frac{Sd(Y)}{Sd(X)}\frac{Sd(Y)}{Sd(X)}
+= \frac{Var(Y)}{Var(X)}$$
