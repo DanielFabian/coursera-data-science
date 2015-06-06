@@ -1,0 +1,57 @@
+---
+title: "Statistical Inference Week 1"
+output: html_document
+---
+### Question 1
+$P(F \cup M) = 17\%$
+
+$P(F) = 12\%$
+
+$P(F \cap M) = 6\%$
+
+$P(F \cup M) = P(F) + P(M) - P(F \cap M)$
+
+$P(M) = P(F \cup M) + P(F \cap M) - P(F)$
+
+``` {r}
+0.17 + 0.06 - 0.12
+```
+
+### Question 3
+let $Z$ be the game we are playing.
+
+$E(Z) = X \cdot p - Y \cdot (1-p)$
+
+to be fair, we want $E(Z) = 0$ so:
+
+$0 = X \cdot p - Y \cdot (1-p)$
+
+$X \cdot p = Y \cdot (1 - p)$
+
+$\frac{p}{1-p} = \frac{Y}{X}$
+
+
+### Question 5
+
+$E(X) = \sum_i x_i p_i$
+
+``` {r}
+x <- 1:4
+p <- x/sum(x)
+sum(x*p)
+```
+
+### Question 6
+$P(+ | A) = 75%$
+
+$P(- | A^c) = 52%$
+
+$P(A) = 30%$
+
+$P(A | +) = \frac{P(+ | A)P(A)}{P(+ | A)P(A) + P(+ | A^c)P(A^c)}$
+
+$P(A | +) = \frac{P(+ | A)P(A)}{P(+ | A)P(A) + (1 - P(- | A^c)(1-P(A)))}$
+
+``` {r}
+0.75 * 0.3 / (0.75 * 0.3 + (1 - 0.52)*(1 - 0.3))
+```
