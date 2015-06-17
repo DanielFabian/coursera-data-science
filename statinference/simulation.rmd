@@ -94,10 +94,12 @@ next, we calculate a density of the normal distribution and one of the $\Gamma$ 
 
 ```{r}
 density <- lapply(kValues, function(k) { 
-    t(sapply(seq(0, 10, 0.1), function(x) { c(k, x, dnorm(x, 5, sqrt(25 / k)), dgamma(x, k, rate = k*0.2)) }))
+    t(sapply(seq(0, 10, 0.1), function(x) { c(k, x, dnorm(x, 5, sqrt(25 / k)),
+                                              dgamma(x, k, rate = k*0.2)) }))
   })
 density <- do.call(rbind, density)
-density <- data.frame(k = density[, 1], x = density[, 2], norm = density[, 3], gamma = density[, 4])
+density <- data.frame(k = density[, 1], x = density[, 2], norm = density[, 3],
+                      gamma = density[, 4])
 ```
 
 now we can plot a histogram. The red curve is the normal distribution, and we are trying to show, that the histogram looks more and more like it. The dashed blue curve, is the theoretically expected curve for the histogram. And the green histogram is the actually measured density.
