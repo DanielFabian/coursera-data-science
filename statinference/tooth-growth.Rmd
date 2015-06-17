@@ -5,6 +5,11 @@ date: \today
 output: pdf_document
 ---
 
+In the very beginning, we look at the summary
+```{r}
+summary(ToothGrowth)
+```
+
 First, we look at the data, without caring much about the supplement and scales.
 ```{r}
 library(ggplot2)
@@ -13,12 +18,47 @@ g <- g + geom_point()
 g
 ```
 
-it looks as though, the dose and the supplement seem to be relevant, so we look at a histogram.
+it looks as though, the dose and the supplement seem to be relevant, so we look at a histogram with mean and standard deviation.
 
 ```{r}
-g <- ggplot(ToothGrowth, aes(x = len, colour = supp, fill=supp))
+library(plyr)
+means <- ddply(ToothGrowth, c("supp", "dose"), summarise, len.mean=mean(len), len.sd=sd(len))
+
+g <- ggplot(ToothGrowth, aes(x = len, colour = supp, fill = supp))
 g <- g + geom_histogram()
-g <- g + geom_vline(xintercept = mean(len))
+g <- g + geom_vline(data = means, aes(xintercept = len.mean))
+g <- g + geom_vline(data = means, aes(xintercept = len.mean - len.sd))
+g <- g + geom_vline(data = means, aes(xintercept = len.mean + len.sd))
 g <- g + facet_grid(dose ~ supp)
 g
 ```
+
+Here, I assume that the two supplements are indepent and I treat the two supplements as two distinct cases and I split the data into two different datasets, on for `OJ` and one for `Vc`. Using the `lm`, I fit a linear model to the data and give the coefficients:
+
+```{r}
+vcMod <- lm(len ~ dose, ToothGrowth[ToothGrowth$supp=="VC",]) 
+summary(vcMod)$coefficients
+ojMod <- lm(len ~ dose, ToothGrowth[ToothGrowth$supp=="OJ",])
+summary(ojMod)$coefficients
+```
+
+the coefficient `dose` is the slope of the linear model's curve. When we look at the `Pr(>|t|)` value, this is the probability, that such a slope would have occured under the null hypothesis, that there is no `dose` parameter, i.e. that there is no linear trend in the data.
+
+We can also get the confidence intervals for the coefficients.
+```{r}
+confint(vcMod)
+confint(ojMod)
+```
+
+So with the $p$-value, we got a very high confidence, that there is indeed a trend in the data, that cannot be explained with the null hypothesis. And with the confidence intervals we also give a $95\%$ confidence interval for the slope and intercept terms.
+
+So with the fitted model, the data looks thus:
+```{r}
+g <- ggplot(ToothGrowth, aes(x = dose, y = len, colour = supp, shape = supp))
+g <- g + geom_point()
+g <- g + geom_smooth(aes(group = supp), method="lm")
+g <- g + facet_grid(supp ~ .)
+g
+```
+
+We see, that the linear model fits the data reasonably well, but maybe a further transformation would be useful. Notice, that we are given `dose` values only for $0.5$, $1$ and $2$. So there is a always a factor of $2$ between them. So maybe looking at the data under a $log$ transformation could be a further idea for some exploratory analysis; but it is beyond the scope of the current project.
