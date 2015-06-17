@@ -1,0 +1,24 @@
+---
+title: "Exploratory analysis of the ToothGrowth dataset"
+author: "Daniel Fabian"
+date: \today
+output: pdf_document
+---
+
+First, we look at the data, without caring much about the supplement and scales.
+```{r}
+library(ggplot2)
+g <- ggplot(ToothGrowth, aes(x = dose, y = len, colour = supp, shape = supp))
+g <- g + geom_point()
+g
+```
+
+it looks as though, the dose and the supplement seem to be relevant, so we look at a histogram.
+
+```{r}
+g <- ggplot(ToothGrowth, aes(x = len, colour = supp, fill=supp))
+g <- g + geom_histogram()
+g <- g + geom_vline(xintercept = mean(len))
+g <- g + facet_grid(dose ~ supp)
+g
+```
