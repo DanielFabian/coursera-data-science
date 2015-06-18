@@ -1,0 +1,8 @@
+name: devdataprod
+account: icey
+server: shinyapps.io
+bundleId: 205166
+url: https://icey.shinyapps.io/devdataprod
+when: 1434633034.67795
+asMultiple: FALSE
+asStatic: FALSE

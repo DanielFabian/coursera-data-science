@@ -1,0 +1,47 @@
+Linear Regressor
+========================================================
+author: Daniel Fabian
+date: 18 June 2015
+transition: rotate
+
+Interactive dataset
+========================================================
+
+Start off with empty data set
+
+- add points
+- reset dataset (if you want to start over)
+- dataset and plot always in sync
+
+Dataset
+========================================================
+
+tabular view of data
+
+```{r, echo=FALSE, xtable, results="asis"}
+table <- data.frame(x = runif(5, min = -10, max = 10), y = runif(5, min = -10, max = 10))
+table <- round(table, digits=2)
+
+library(xtable)
+print(xtable(table), type="html")
+```
+
+Linear regression plot
+========================================================
+
+```{r, echo=FALSE}
+table <- data.frame(x=seq(-10, 10, length.out = 50))
+table$y <- 0.5*table$x - 2 * sin(table$x) + rnorm(nrow(table))
+
+library(ggplot2)
+g <- ggplot(data=table, aes(x=x, y=y))
+g <- g + coord_cartesian(xlim = c(-10, 10), ylim=c(-10, 10))
+g <- g + geom_point(size=3, colour='red')
+g <- g + geom_smooth(method='lm')
+g
+```
+
+UI Screenshot
+========================================================
+
+![UI Screenshot](pitch-figure/screenshot.png)
