@@ -20,7 +20,7 @@ shinyUI(
         above each other, i.e. no different in the x-coordinate, will not produce a linear 
         regression line. Other than that, have fun.'),
       plotOutput('plot', height = "600px", width = "600px"),
-      a('View source on github', href='https://github.com/DanielFabian/datasciencecoursera/devdataprod')
+      a('View source on github', href='https://github.com/DanielFabian/datasciencecoursera/tree/master/devdataprod')
     )
   )
 )
