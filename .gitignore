@@ -13,3 +13,7 @@ vignettes/*.pdf
 packrat/lib*/
 packrat/src/
 *.RData
+*_cache/
+*.bz2
+*.rds
+*.db
