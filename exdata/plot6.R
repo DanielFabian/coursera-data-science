@@ -5,7 +5,7 @@ SCC <- readRDS("Source_Classification_Code.rds")
 vehic <- SCC[grep('vehic', SCC$EI.Sector, ignore.case = T), ]
 
 NEI <- NEI[NEI$SCC %in% vehic$SCC, ]
-NEI <- NEI[NEI$fips %in% c("24510", "06037"), ]
+NEI <- NEI[NEI$fips %in% c("06037", "24510"), ]
 
 totalsPerYear <- aggregate(NEI$Emissions, by=list(NEI$year, NEI$fips), sum)
 names(totalsPerYear) <- c("Year", "fips", "total")
@@ -15,21 +15,11 @@ levels(totalsPerYear$fips) <- c("Los Angeles County", "Baltimore City")
 
 library(ggplot2)
 
-g <- ggplot(totalsPerYear, aes(x=Year, y=total/1000))
+g <- ggplot(totalsPerYear, aes(x=Year, y=total))
 g <- g + geom_bar(stat="identity")
-g <- g + ylab("PM2.5 emission in 1000 tons")
-g <- g + ggtitle("Vehicle emissions - Baltimore City")
-g
+g <- g + ylab("PM2.5 emission in tons")
+g <- g + ggtitle("Vehicle emissions - Baltimore City vs Los Angeles County")
+g <- g + facet_wrap("fips", scales = "free_y")
+print(g)
 
-exportToPng <- function(fileName) {
-  guiDev <- dev.cur()
-  
-  png(fileName, width = 480, height = 480)
-  pngDev <- dev.cur()
-  
-  dev.set(guiDev)
-  dev.copy(which = pngDev)
-  dev.off(which = pngDev)
-}
-
-exportToPng("plot5.png")
+ggsave("plot6.png", width = 4.8, height = 4.8, dpi = 100)

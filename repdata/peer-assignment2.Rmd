@@ -1,0 +1,172 @@
+---
+title: "Analysis of influences of stroms on population health and economic consequences"
+author: "Daniel Fabian"
+date: "June 20, 2015"
+output: html_document
+---
+
+Based on the National Weather Service Storm Data, we give figures for health and economic impact of different strorm events. Amonst all the events, some of the most harmful ones are picked and shown in the graphs. We provide different views on the data, so that one can well see, how to best address them. The results we see, tell us, that as for total economic damage, flood is the worst. For crop damages, drought is worst. And as for health, by far, tornados are worst.
+
+
+# Data processing
+First we load the data at all
+``` {r, cache=T}
+stormData <- read.csv(bzfile("repdata-data-StormData.csv.bz2"))
+```
+
+Next, we need to process the damage colums and transform them to numbers. To do that, we do it by the columns. We take only the crop and prop damages as separate data frames. And for the totals on the non-zero values are relevant:
+``` {r}
+cropDamages <- stormData[stormData$CROPDMG != 0, ]
+propDamages <- stormData[stormData$PROPDMG != 0, ]
+```
+
+Now we need to transform our values into numbers. To do that, we need to do something meaningful with the exponents. First we look at what expontents exist:
+
+``` {r}
+unique(cropDamages$CROPDMGEXP)
+```
+
+we set the exponents to meaningful numbers:
+``` {r}
+cropDamages$CROPDMGEXP <- as.character(cropDamages$CROPDMGEXP)
+cropDamages[cropDamages$CROPDMGEXP == "", "CROPDMGEXP"] <- 0
+cropDamages[cropDamages$CROPDMGEXP == "k", "CROPDMGEXP"] <- 3
+cropDamages[cropDamages$CROPDMGEXP == "K", "CROPDMGEXP"] <- 3
+cropDamages[cropDamages$CROPDMGEXP == "m", "CROPDMGEXP"] <- 6
+cropDamages[cropDamages$CROPDMGEXP == "M", "CROPDMGEXP"] <- 6
+cropDamages[cropDamages$CROPDMGEXP == "B", "CROPDMGEXP"] <- 9
+cropDamages$CROPDMGEXP <- as.numeric(cropDamages$CROPDMGEXP)
+```
+
+now we can merge the crop damages into a real number:
+``` {r}
+cropDamages$CROPDMG <- cropDamages$CROPDMG * 10^cropDamages$CROPDMGEXP
+cropDamages$CROPDMGEXP <- NULL
+```
+
+now we can do the same thing for the prop damages. First we look at what expontents exist:
+
+``` {r}
+unique(propDamages$PROPDMGEXP)
+```
+
+we set the exponents to meaningful numbers:
+``` {r}
+propDamages$PROPDMGEXP <- as.character(propDamages$PROPDMGEXP)
+propDamages[propDamages$PROPDMGEXP == "", "PROPDMGEXP"] <- 0
+propDamages[propDamages$PROPDMGEXP == "+", "PROPDMGEXP"] <- 0
+propDamages[propDamages$PROPDMGEXP == "-", "PROPDMGEXP"] <- 0
+propDamages[propDamages$PROPDMGEXP == "h", "PROPDMGEXP"] <- 2
+propDamages[propDamages$PROPDMGEXP == "H", "PROPDMGEXP"] <- 2
+propDamages[propDamages$PROPDMGEXP == "K", "PROPDMGEXP"] <- 3
+propDamages[propDamages$PROPDMGEXP == "m", "PROPDMGEXP"] <- 6
+propDamages[propDamages$PROPDMGEXP == "M", "PROPDMGEXP"] <- 6
+propDamages[propDamages$PROPDMGEXP == "B", "PROPDMGEXP"] <- 9
+propDamages$PROPDMGEXP <- as.numeric(propDamages$PROPDMGEXP)
+```
+
+now we can merge the crop damages into a real number:
+``` {r}
+propDamages$PROPDMG <- propDamages$PROPDMG * 10^propDamages$PROPDMGEXP
+propDamages$PROPDMGEXP <- NULL
+```
+
+we need a sum of injuries and fatalities per event type, and we filter out empty values, as they are not the most dangerous event types.
+
+```{r}
+total.injuries <- aggregate(stormData$INJURIES, by=list(stormData$EVTYPE), sum)
+total.fatalities <- aggregate(stormData$FATALITIES, by=list(stormData$EVTYPE), sum)
+names(total.fatalities) <- c("EVTYPE", "total")
+names(total.injuries) <- c("EVTYPE", "total")
+```
+
+we have far too many event types, so we sort them by the number of cases and take the first few:
+```{r}
+total.injuries <- total.injuries[order(-total.injuries$total), ]
+total.fatalities <- total.fatalities[order(-total.fatalities$total), ]
+```
+
+we pick the first few categories from each, make a union and use that as the base data that we want to plot:
+
+```{r}
+eventTypes <- union(total.injuries[1:10,]$EVTYPE, total.fatalities[1:10,]$EVTYPE)
+
+total.injuries <- total.injuries[total.injuries$EVTYPE %in% eventTypes, ]
+total.fatalities <- total.fatalities[total.fatalities$EVTYPE %in% eventTypes, ]
+```
+
+we prepare a common dataset for the totals for health:
+```{r}
+total.injuries$healthType <- "Injuries"
+total.fatalities$healthType <- "Fatalities"
+total.health = rbind(total.injuries, total.fatalities)
+```
+
+analoguously, we need to do the same for the economic damages:
+```{r}
+total.cropDamages <- aggregate(cropDamages$CROPDMG, by=list(cropDamages$EVTYPE), sum)
+total.propDamages <- aggregate(propDamages$PROPDMG, by=list(propDamages$EVTYPE), sum)
+names(total.cropDamages) <- c("EVTYPE", "total")
+names(total.propDamages) <- c("EVTYPE", "total")
+```
+
+we have far too many event types, so we sort them by the number of cases and take the first few:
+```{r}
+total.cropDamages <- total.cropDamages[order(-total.cropDamages$total), ]
+total.propDamages <- total.propDamages[order(-total.propDamages$total), ]
+```
+
+we pick the first few categories from each, make a union and use that as the base data that we want to plot:
+```{r}
+eventTypes <- union(total.cropDamages[1:10,]$EVTYPE, total.propDamages[1:10,]$EVTYPE)
+
+total.cropDamages <- total.cropDamages[total.cropDamages$EVTYPE %in% eventTypes, ]
+total.propDamages <- total.propDamages[total.propDamages$EVTYPE %in% eventTypes, ]
+```
+
+we prepare a common dataset for the totals for health:
+```{r}
+total.cropDamages$dmgType <- "Crop"
+total.propDamages$dmgType <- "Property"
+total.economic = rbind(total.cropDamages, total.propDamages)
+```
+
+
+# Results
+
+Here, we see a bar plot by event type for the two variables injuries and fatalities:
+
+```{r}
+library(ggplot2)
+g <- ggplot()
+g <- g + geom_bar(data=total.health, aes(x=EVTYPE, y=total), stat="identity")
+g <- g + ggtitle("Health impact per event type")
+g <- g + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+g <- g + facet_wrap("healthType", scales = "free_y")
+g
+```
+
+Here, we see a bar plot by event type for the two variables property damage and crop damage:
+
+```{r}
+library(ggplot2)
+g <- ggplot()
+g <- g + geom_bar(data=total.economic, aes(x=EVTYPE, y=total/10^9), stat="identity")
+g <- g + ggtitle("Economic impact per event type")
+g <- g + ylab("total damage in Billion $")
+g <- g + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+g <- g + facet_wrap("dmgType", scales = "free_y")
+g
+```
+
+The grand total economic damage is visible in this graph:
+```{r}
+library(ggplot2)
+g <- ggplot()
+g <- g + geom_bar(data=total.economic, aes(x=EVTYPE, y=total/10^9), stat="identity")
+g <- g + ggtitle("Total Economic impact")
+g <- g + ylab("total damage in Billion $")
+g <- g + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+g
+```
+

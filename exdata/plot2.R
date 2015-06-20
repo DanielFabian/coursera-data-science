@@ -16,7 +16,7 @@ barplot(totalsPerYear$total,
 exportToPng <- function(fileName) {
   guiDev <- dev.cur()
   
-  png(fileName, width = 480, height = 480)
+  png(fileName)
   pngDev <- dev.cur()
   
   dev.set(guiDev)

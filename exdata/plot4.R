@@ -17,17 +17,6 @@ g <- ggplot(totalsPerYear, aes(x=Year, y=total/1000))
 g <- g + geom_bar(stat="identity")
 g <- g + ylab("PM2.5 emission in 1000 tons")
 g <- g + ggtitle("Total emission - Coal combustion related sources")
-g
+print(g)
 
-exportToPng <- function(fileName) {
-  guiDev <- dev.cur()
-  
-  png(fileName, width = 480, height = 480)
-  pngDev <- dev.cur()
-  
-  dev.set(guiDev)
-  dev.copy(which = pngDev)
-  dev.off(which = pngDev)
-}
-
-exportToPng("plot4.png")
+ggsave("plot4.png", width = 4.8, height = 4.8, dpi = 100)

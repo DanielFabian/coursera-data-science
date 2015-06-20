@@ -12,18 +12,9 @@ library(ggplot2)
 
 g <- ggplot(totalsPerYear, aes(x=Year, y=total))
 g <- g + geom_bar(stat="identity")
+g <- g + ylab("PM2.5 emission in tons")
+g <- g + ggtitle("Emission by type for Baltimore City")
 g <- g + facet_wrap("type", scales = "free_y")
-g
+print(g)
 
-exportToPng <- function(fileName) {
-  guiDev <- dev.cur()
-  
-  png(fileName, width = 480, height = 480)
-  pngDev <- dev.cur()
-  
-  dev.set(guiDev)
-  dev.copy(which = pngDev)
-  dev.off(which = pngDev)
-}
-
-exportToPng("plot3.png")
+ggsave("plot3.png", width = 4.8, height = 4.8, dpi = 100)
