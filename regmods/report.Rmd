@@ -1,0 +1,59 @@
+---
+title: "Course Project"
+author: "Daniel Fabian"
+date: "June 20, 2015"
+output: pdf_document
+---
+# Summary
+The `mtcars` data set shows was analysed using a linear regression model, fitted with two variables: weight and automatic vs. manual transmission. However, no significant difference in `mpg` can be linked to automatic vs. manual transmission. Once weight of the car has been accounted for, the transmission has near-zero influence in the `mtcars` dataset.
+
+# Analysis
+We start off with the `mtcars` data set, but we make two factor variables actually factors, first:
+```{r}
+carsData <- mtcars
+carsData$am <- as.factor(carsData$am)
+levels(carsData$am) <- c("Automatic", "Manual")
+
+carsData$vs <- as.factor(carsData$vs)
+levels(carsData$vs) <- c("V", "S")
+```
+
+We start off by looking at the different pairwise plots, see fig 1.
+
+Since automatic vs manual gear is a factor variable and not just a continuous one, we cannot directly use it for predicting the `mpg`. On the other hand, a very significant part of `mpg` can be explained with its weight, see fig 2.
+
+we can start off by fitting a first model where we take care of the weight of the car:
+```{r}
+fit1 <- lm(mpg ~ wt, data = carsData)
+```
+
+now when we took care of the weight as the main predictor, we can try and fit a linear model, where the gear is incorporated:
+
+```{r}
+summary(update(fit1, mpg ~ wt + am))
+```
+
+We see, that the $t$-value for the automatic vs. manual gear is very low, so it seems to be very much not significant.
+```{r} 
+plot(residuals(fit1), col=carsData$am, pch=19)
+```
+
+we see the same in the residuals plot.
+
+So this data, does not support the evidence that any of automatic vs manual transmission is better for mpg. As such the difference cannot be quantified.
+
+# Appendix
+```{r, echo=F, fig.height=7}
+plot(carsData, pch='.', main="fig 1")
+```
+
+```{r, echo=F, fig.height=3.5}
+plot(carsData$wt, carsData$mpg, main="fig 2")
+abline(lm(carsData$mpg ~ carsData$wt))
+```
+
+```{r, echo=F, fig.height=5}
+par(mfrow = c(2,2))
+plot(fit1, main="fig 3")
+```
+
