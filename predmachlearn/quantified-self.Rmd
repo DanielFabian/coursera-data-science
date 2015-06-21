@@ -1,0 +1,49 @@
+---
+title: "Quantified Self"
+author: "Daniel Fabian"
+date: "June 20, 2015"
+output: html_document
+---
+
+First we load the training data and split it into a training and test set, dropping columns that have no data in the final testing set. Because we cannot use them in the prediction. Also, we need to drop the row number, because this one would be selected as the main classification criterion. Furthermore, the time and metadata should not be considered, but rather the measurements be unique.
+```{r}
+training <- read.csv("pml-training.csv")
+finaltesting <- read.csv("pml-testing.csv")
+badCols <- c(1:7, which(colSums(is.na(finaltesting)) > 0))
+
+training <- training[, -badCols]
+finaltesting <- finaltesting[, -badCols]
+library(caret)
+
+trainingIds <- createDataPartition(training$classe, p = 0.75, list = F)
+training <- training[trainingIds, ]
+testing <- training[-trainingIds, ]
+```
+
+this is a classification problem as opposed to a regression problem. We try using random forests as we have a reasonably large data set and we want to have a classifier with a high accuracy.
+
+```{r, cache=T}
+library(doParallel)
+registerDoParallel(cores = 8)
+fit <- train(classe ~ ., data = training, method = "rf", verbose = T)
+```
+
+the random forrest training procedure uses bootstrapping interally as a cross-validation, so we do not need to do anything explicitly about it.
+
+```{r}
+fit
+```
+
+To estimate how good or bad, our model is, we can now use it to predict on our `testing` set. Mind you, we did not use it all during the training process, so this is an out-of-sample error estimate and it should give us a reasonable estimate on the accuracy:
+
+```{r}
+mean(testing$classe == predict(fit, testing))
+```
+
+given, that our testing dataset only has 
+
+```{r}
+nrow(testing)
+```
+
+rows, a estimating the out-of-sample error is a bit difficult, because we might just hit every single testing sample correctly. This is, where the unusually large accuracy value comes from. A value of `100%` is not exactly helpful, because we cannot quantify the out-of-sample error beyond saying, that it is zero. At any rate, our predicted out-of-sample error is very, very small.
