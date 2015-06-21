@@ -110,23 +110,19 @@ fit &lt;- train(classe ~ ., data = training, method = &quot;rf&quot;, verbose = 
 ## Resampling results across tuning parameters:
 ## 
 ##   mtry  Accuracy   Kappa      Accuracy SD  Kappa SD   
-##    2    0.9894279  0.9866284  0.001733492  0.002194564
-##   27    0.9891704  0.9863032  0.001642622  0.002075764
-##   52    0.9790425  0.9734942  0.004369988  0.005522994
+##    2    0.9902437  0.9876513  0.001749094  0.002215620
+##   27    0.9893591  0.9865304  0.001539615  0.001958724
+##   52    0.9799114  0.9745696  0.003265825  0.004156355
 ## 
 ## Accuracy was used to select the optimal model using  the largest value.
 ## The final value used for the model was mtry = 2.</code></pre>
 <p>To estimate how good or bad, our model is, we can now use it to predict on our <code>testing</code> set. Mind you, we did not use it all during the training process, so this is an out-of-sample error estimate and it should give us a reasonable estimate on the accuracy:</p>
 <pre class="r"><code>mean(testing$classe == predict(fit, testing))</code></pre>
-<pre><code>## Loading required package: randomForest</code></pre>
-<pre><code>## Warning: package 'randomForest' was built under R version 3.2.1</code></pre>
-<pre><code>## randomForest 4.6-10
-## Type rfNews() to see new features/changes/bug fixes.</code></pre>
-<pre><code>## [1] 0.998374</code></pre>
+<pre><code>## [1] 1</code></pre>
 <p>given, that our testing dataset only has</p>
 <pre class="r"><code>nrow(testing)</code></pre>
-<pre><code>## [1] 3690</code></pre>
-<p>rows, a estimating the out-of-sample error is a bit difficult, because we might just hit every single testing sample correctly.</p>
+<pre><code>## [1] 3674</code></pre>
+<p>rows, a estimating the out-of-sample error is a bit difficult, because we might just hit every single testing sample correctly. This is, where the unusually large accuracy value comes from. A value of <code>100%</code> is not exactly helpful, because we cannot quantify the out-of-sample error beyond saying, that it is zero. At any rate, our predicted out-of-sample error is very, very small.</p>
 
 
 </div>
